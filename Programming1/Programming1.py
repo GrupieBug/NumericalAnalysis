@@ -18,6 +18,10 @@ def newton_basis(pts, co_efs):
     return 0
 
 
+def lagrange_basis():
+    return 0
+
+
 def evaluate_polynomials(co_efs, pts):
     mat = newton_basis(pts, co_efs.shape[-1]-1)
     # Matrix-vector multiplication
