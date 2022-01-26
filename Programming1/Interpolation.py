@@ -25,11 +25,6 @@ def find_coefficients(x_vals, y_vals):
     return co_efs
 
 
-n = 10
-# Get equally spaced points
-xvals = np.linspace(0, 3, n+1)
-
-
 # Functions to interpolate
 def f(x): return np.sin(x)
 
@@ -38,20 +33,26 @@ def f(x): return np.sin(x)
 
 
 # def f(x): return 1.0 / (1.0 + 25.0 * (x - 1.5)**2.0)
+def main():
+    n = 10
+    # Get equally spaced points
+    xvals = np.linspace(0, 3, n + 1)
+    yvals = f(xvals)
+    coefs = find_coefficients(xvals, yvals)
 
-yvals = f(xvals)
-coefs = find_coefficients(xvals, yvals)
+    # Evaluate the polynomial
+    eval_pts = np.linspace(0, 3, 500)
+    pvals = evaluate_polynomials(coefs, eval_pts)
 
-# Evaluate the polynomial
-eval_pts = np.linspace(0, 3, 500)
-pvals = evaluate_polynomials(coefs, eval_pts)
+    # Plot the function and the polynomial
+    plt.plot(eval_pts, pvals, linewidth=4, label='Interpolant')
+    plt.plot(eval_pts, f(eval_pts), linewidth=4, linestyle='--', label='Exact')
+    plt.plot(xvals, yvals, 'ko')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.show()
 
-# Plot the function and the polynomial
-plt.plot(eval_pts, pvals, linewidth=4, label='Interpolant')
-plt.plot(eval_pts, f(eval_pts), linewidth=4, linestyle='--', label='Exact')
-plt.plot(xvals, yvals, 'ko')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.legend()
-plt.show()
 
+if __name__ == "__main__":
+    main()
