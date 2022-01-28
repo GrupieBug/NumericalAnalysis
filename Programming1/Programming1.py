@@ -14,7 +14,24 @@ import numpy.linalg
 from matplotlib import pyplot as plt
 
 
-def newton_basis(pts, co_efs):
+def newton_basis(pts, degree):
+    num_rows = pts.size
+    mat = np.ones((num_rows, degree + 1))
+    for i in range(0, num_rows):
+        for j in range(0, degree):
+            if j == 0:
+                mat[i, j] = 1
+            if j > i:
+                mat[i, j] = 0
+            else:
+                mat[i, j] = mat[i, j] * (pts[i] - pts[j - 1])
+    for i in range(0, num_rows):
+        for j in range(0, degree):
+            mat[i, j] = mat[i, j] * mat[i, j - 1]
+            # current_value = mat[:, i]
+            # number_1 = pts[i - 1]
+            # number_2 = pts[i]
+            # mat[:, i] = (pts[i - 1] - pts[i]) * mat[:, i]
     return 0
 
 
@@ -23,14 +40,14 @@ def lagrange_basis():
 
 
 def evaluate_polynomials(co_efs, pts):
-    mat = newton_basis(pts, co_efs.shape[-1]-1)
+    mat = newton_basis(pts, co_efs.shape[-1] - 1)
     # Matrix-vector multiplication
     f_vals = mat @ co_efs
     return f_vals
 
 
 def find_coefficients(x_vals, y_vals):
-    mat = newton_basis(x_vals, x_vals.shape[0]-1)
+    mat = newton_basis(x_vals, x_vals.shape[0] - 1)
     # Solve the linear system
     co_efs = np.linalg.solve(mat, y_vals)
     return co_efs
@@ -47,7 +64,7 @@ def f(x): return np.sin(x)
 
 
 def heavily_oscillatory_function(x):
-    return math.exp(math.cos(3 * x)) + math.sin(10 * math.sin(3 * x))
+    return np.exp(np.cos(3 * x)) + np.sin(10 * np.sin(3 * x))
 
 
 def main():
@@ -73,4 +90,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
