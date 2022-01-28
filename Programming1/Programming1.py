@@ -36,18 +36,11 @@ def newton_basis(pts, degree):
             # number_1 = pts[i - 1]
             # number_2 = pts[i]
             # mat[:, i] = (pts[i - 1] - pts[i]) * mat[:, i]
-    return 0
+    return mat
 
 
 def lagrange_basis():
     return 0
-
-
-def evaluate_polynomials(co_efs, pts):
-    mat = newton_basis(pts, co_efs.shape[-1] - 1)
-    # Matrix-vector multiplication
-    f_vals = mat @ co_efs
-    return f_vals
 
 
 def find_coefficients(x_vals, y_vals):
@@ -57,8 +50,15 @@ def find_coefficients(x_vals, y_vals):
     return co_efs
 
 
+def evaluate_polynomials(co_efs, pts):
+    mat = newton_basis(pts, co_efs.shape[-1] - 1)
+    # Matrix-vector multiplication
+    f_vals = mat @ co_efs
+    return f_vals
+
+
 # Functions to interpolate
-def f(x): return np.sin(x)
+# def f(x): return np.sin(x)
 
 
 # def f(x): return np.heaviside(x-1.5, 0.5)
@@ -67,19 +67,21 @@ def f(x): return np.sin(x)
 # def f(x): return 1.0 / (1.0 + 25.0 * (x - 1.5)**2.0)
 
 
-def heavily_oscillatory_function(x):
+def f(x):  # heavily oscillatory function
     return np.exp(np.cos(3 * x)) + np.sin(10 * np.sin(3 * x))
 
 
 def main():
     n = 10
     # Get equally spaced points
-    xvals = np.linspace(0, 3, n + 1)
+    start = 0
+    end = 2 * math.pi
+    xvals = np.linspace(start, end, n + 1)
     yvals = f(xvals)
     coefs = find_coefficients(xvals, yvals)
 
     # Evaluate the polynomial
-    eval_pts = np.linspace(0, 3, 500)
+    eval_pts = np.linspace(start, end, 500)
     pvals = evaluate_polynomials(coefs, eval_pts)
 
     # Plot the function and the polynomial
