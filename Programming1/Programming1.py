@@ -15,19 +15,23 @@ from matplotlib import pyplot as plt
 
 
 def newton_basis(pts, degree):
+    # pts = [1, 2, 3, 4]
+    # degree = 3
+    # num_rows = 4
     num_rows = pts.size
-    mat = np.ones((num_rows, degree + 1))
+    mat = np.zeros((num_rows, degree + 1))
     for i in range(0, num_rows):
-        for j in range(0, degree):
+        for j in range(0, degree + 1):
             if j == 0:
                 mat[i, j] = 1
-            if j > i:
+            elif j > i:
                 mat[i, j] = 0
             else:
-                mat[i, j] = mat[i, j] * (pts[i] - pts[j - 1])
+                mat[i, j] = (pts[i] - pts[j - 1])
     for i in range(0, num_rows):
-        for j in range(0, degree):
-            mat[i, j] = mat[i, j] * mat[i, j - 1]
+        for j in range(0, degree + 1):
+            if j > 0:
+                mat[i, j] = mat[i, j] * mat[i, j - 1]
             # current_value = mat[:, i]
             # number_1 = pts[i - 1]
             # number_2 = pts[i]
