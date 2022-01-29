@@ -28,7 +28,7 @@ def find_coefficients(x_vals, y_vals):
 
 
 # Functions to interpolate
-# def f(x): return np.sin(x)
+def f(x): return np.sin(x)
 
 
 def heavily_oscillatory_function(x):
@@ -45,7 +45,7 @@ def main():
     # xvals = np.linspace(0, 3, n + 1)
     xvals = np.linspace(0, 2 * math.pi, n+1)
     # yvals = f(xvals)
-    yvals = heavily_oscillatory_function(xvals)
+    yvals = f(xvals)
     coefs = find_coefficients(xvals, yvals)
 
     # Evaluate the polynomial
@@ -54,7 +54,7 @@ def main():
 
     # Plot the function and the polynomial
     plt.plot(eval_pts, pvals, linewidth=4, label='Interpolant')
-    plt.plot(eval_pts, heavily_oscillatory_function(eval_pts), linewidth=4, linestyle='--', label='Exact')
+    plt.plot(eval_pts, f(eval_pts), linewidth=4, linestyle='--', label='Exact')
     plt.plot(xvals, yvals, 'ko')
     plt.xlabel('x')
     plt.ylabel('y')
