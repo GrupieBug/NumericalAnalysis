@@ -16,35 +16,61 @@ from matplotlib import pyplot as plt
 
 
 def newton_basis(pts, degree):
+    """
+    This function returns the basis for the Newton polynomial interpolation
+    :param pts: the set of x-points to interpolate from
+    :param degree: the degree of the polynomial of which to interpolate
+    :return: the basis matrix for the Newton polynomial
+    """
     num_rows = pts.size
     mat = np.zeros((num_rows, degree + 1))
-    # Fill in matrix with "unique" terms, x point difference that can not be recursively multiplied
+
+    # Fill in matrix with "unique" terms, x point difference that can not be "recursively" multiplied
+    # This results in a lower triangular system
     for i in range(0, num_rows):
         for j in range(0, degree + 1):
             if j == 0:
+                # upper triangle of the matrix should be zero
                 mat[i, j] = 1
             elif j > i:
+                # first column must be 1
                 mat[i, j] = 0
             else:
+                # otherwise, the "unique" term is as follows:
                 mat[i, j] = (pts[i] - pts[j - 1])
-    # recursively multiply each index by the column in the previous respective row
+    # "recursively" multiply each index by the column in the previous respective row
     for i in range(0, num_rows):
         for j in range(0, degree + 1):
             if j > 0:
+                # the values at each column are the results from the previous column multiplied by itself
                 mat[i, j] = mat[i, j] * mat[i, j - 1]
     return mat
 
 
 def lagrange_basis(pts, degree):
+    """
+    This function returns the matrix that contains the basis for the lagrange polynomial
+    :param pts: interpolation x inputs
+    :param degree: degree of the resulting polynomial
+    :return: Legrange matrix that can be used to solve for the legrange polynomials
+    """
     num_rows = pts.size
     mat = np.zeros((num_rows, degree + 1))
     for i in range(0, num_rows):
         for j in range(0, degree + 1):
+            # index values will be the x value at the row index raised to the column index
             mat[i, j] = pts[i] ** j
     return mat
 
 
 def find_coefficients(x_vals, y_vals, basis):
+    """
+    This function was provided to solve for the coefficient matrix
+    :param x_vals: input x values
+    :param y_vals: values of the function evaluation points
+    :param basis: given basis matrix
+    :return: the coefficient values of the polynomial in array form
+    """
     if basis == "newton":
         mat = newton_basis(x_vals, x_vals.shape[0] - 1)
         # Solve the linear system
@@ -59,6 +85,13 @@ def find_coefficients(x_vals, y_vals, basis):
 
 
 def evaluate_polynomials(co_efs, pts, basis):
+    """
+    This function will return the final polynomial for any basis
+    :param co_efs: the coefficients of the polynomial
+    :param pts: the x input points
+    :param basis: the basis function solved
+    :return: the final polynomial equation
+    """
     if basis == "newton":
         mat = newton_basis(pts, co_efs.shape[-1] - 1)
         # Matrix-vector multiplication
@@ -73,6 +106,12 @@ def evaluate_polynomials(co_efs, pts, basis):
 
 
 def evaluate_newton_basis(input_range, function):
+    """
+    This function is the generic method call to evaluate a set of points using the newton basis. Displays a final plot
+    of the results
+    :param input_range: the range of x values given
+    :param function: the function wished to interpolate
+    """
     n = 10
     # Get equally spaced points
     start = input_range[0]
@@ -96,6 +135,12 @@ def evaluate_newton_basis(input_range, function):
 
 
 def evaluate_lagrange_basis(input_range, function):
+    """
+    This function is the generic method call to evaluate a set of points using the Lagrange basis. Displays a final plot
+    of the results
+    :param input_range: the range of x values given
+    :param function: the function wished to interpolate
+    """
     n = 10
     # Get equally spaced points
     start = input_range[0]
@@ -135,10 +180,10 @@ def q(x):  # heavily oscillatory function
 def main():
     # manipulate range plotted here
     x_range = [0, 2 * math.pi]
-    # Run this to evaluate the Newton basis. Second argument is the function to interpolate.
+    # Run this to evaluate the Newton basis. Second argument is the function to interpolate passed as a delegate
     # You can choose functions from choices above
     evaluate_newton_basis(x_range, f)
-    # Run this to evaluate the Lagrange basis. Second argument is the function to interpolate
+    # Run this to evaluate the Lagrange basis. Second argument is the function to interpolate passed as a delegate
     evaluate_lagrange_basis(x_range, f)
 
 
