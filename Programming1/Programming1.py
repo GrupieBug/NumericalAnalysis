@@ -73,11 +73,13 @@ def lagrange_basis(pts, degree):
     :return: Legrange matrix that can be used to solve for the legrange polynomials
     """
     num_rows = pts.size
-    mat = np.zeros((num_rows, degree + 1))
-    for i in range(0, num_rows):
-        for j in range(0, degree + 1):
-            # index values will be the x value at the row index raised to the column index
-            mat[i, j] = pts[i] ** j
+    mat = np.ones((num_rows, degree + 1))
+    row_count = 0
+    for i in range(0, degree - 1):
+        for j in range(0, num_rows):
+            if j is not i:
+                # Each column is equal to the previous column times difference in x-vals to interpolation points
+                mat[j, i+1] = mat[j, i] * ((0 - pts[i + 1]) / (pts[i + 1] - pts[j]))
     return mat
 
 
