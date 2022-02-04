@@ -18,6 +18,10 @@ from matplotlib import pyplot as plt
 def newton_basis(pts, degree):
     """
     This function returns the basis for the Newton polynomial interpolation
+
+    I'm keeping this here because I'm not sure about the accuracy of the "newton_2" function. This can be used instead
+    to find coef
+    instead in the find coef function because it is accurate.
     :param pts: the set of x-points to interpolate from
     :param degree: the degree of the polynomial of which to interpolate
     :return: the basis matrix for the Newton polynomial
@@ -47,6 +51,20 @@ def newton_basis(pts, degree):
     return mat
 
 
+def newton_2(pts, interp):
+    """
+    This is the second implementation of the newton method. This is a re-correction
+    :param pts: The x-points to evaluate
+    :param interp: The interpolation points to evaluate (set = to x-points to find coefficients
+    :return: A matrix of the basis function
+    """
+    mat = np.ones((pts.shape[-1], interp.shape[-1]))
+    for i in range(0, interp.shape[-1] - 1):
+        # Each column is equal to the previous column times difference in x-vals to interpolation points
+        mat[:, i+1] = mat[:, i] * (pts - interp[i])
+    return mat
+
+
 def lagrange_basis(pts, degree):
     """
     This function returns the matrix that contains the basis for the lagrange polynomial
@@ -72,7 +90,8 @@ def find_coefficients(x_vals, y_vals, basis):
     :return: the coefficient values of the polynomial in array form
     """
     if basis == "newton":
-        mat = newton_basis(x_vals, x_vals.shape[0] - 1)
+        mat2 = newton_basis(x_vals, x_vals.shape[0] - 1)
+        mat = newton_2(x_vals, x_vals)
         # Solve the linear system
         co_efs = np.linalg.solve(mat, y_vals)
         return co_efs
@@ -84,16 +103,17 @@ def find_coefficients(x_vals, y_vals, basis):
     return 0
 
 
-def evaluate_polynomials(co_efs, pts, basis):
+def evaluate_polynomials(co_efs, pts, interp_points, basis):
     """
     This function will return the final polynomial for any basis
+    :param interp_points:
     :param co_efs: the coefficients of the polynomial
     :param pts: the x input points
     :param basis: the basis function solved
     :return: the final polynomial equation
     """
     if basis == "newton":
-        mat = newton_basis(pts, co_efs.shape[-1] - 1)
+        mat = newton_2(pts, interp_points)
         # Matrix-vector multiplication
         f_vals = mat @ co_efs
         return f_vals
@@ -122,7 +142,8 @@ def evaluate_newton_basis(input_range, function):
 
     # Evaluate the polynomial
     eval_pts = np.linspace(start, end, 500)
-    pvals = evaluate_polynomials(coefs, eval_pts, "newton")
+    x_new = np.linspace(start, end, n + 1)
+    pvals = evaluate_polynomials(coefs, eval_pts, x_new, "newton")
 
     # Plot the function and the polynomial
     plt.plot(eval_pts, pvals, linewidth=4, label='Interpolant')
@@ -131,6 +152,7 @@ def evaluate_newton_basis(input_range, function):
     plt.xlabel('x')
     plt.ylabel('y')
     plt.legend()
+    plt.title("Newton Interpolation")
     plt.show()
 
 
@@ -151,7 +173,7 @@ def evaluate_lagrange_basis(input_range, function):
 
     # Evaluate the polynomial
     eval_pts = np.linspace(start, end, 500)
-    pvals = evaluate_polynomials(coefs, eval_pts, "lagrange")
+    pvals = evaluate_polynomials(coefs, eval_pts, [], "lagrange")
 
     # Plot the function and the polynomial
     plt.plot(eval_pts, pvals, linewidth=4, label='Interpolant')
@@ -160,6 +182,7 @@ def evaluate_lagrange_basis(input_range, function):
     plt.xlabel('x')
     plt.ylabel('y')
     plt.legend()
+    plt.title("Lagrange Interpolation")
     plt.show()
 
 
