@@ -61,7 +61,7 @@ def newton_2(pts, interp):
     mat = np.ones((pts.shape[-1], interp.shape[-1]))
     for i in range(0, interp.shape[-1] - 1):
         # Each column is equal to the previous column times difference in x-vals to interpolation points
-        mat[:, i+1] = mat[:, i] * (pts - interp[i])
+        mat[:, i + 1] = mat[:, i] * (pts - interp[i])
     return mat
 
 
@@ -79,7 +79,23 @@ def lagrange_basis(pts, degree):
         for j in range(0, num_rows):
             if j is not i:
                 # Each column is equal to the previous column times difference in x-vals to interpolation points
-                mat[j, i+1] = mat[j, i] * ((0 - pts[i + 1]) / (pts[i + 1] - pts[j]))
+                mat[j, i + 1] = mat[j, i] * ((0 - pts[i + 1]) / (pts[i + 1] - pts[j]))
+    return mat
+
+
+def fourier_basis(eval_pts, interp_pts):
+    # Create the initial matrix
+    mat_size = eval_pts.shape[-1]
+    mat = np.ones((mat_size, mat_size))
+    cos_eval_points = np.arange(0, mat_size // 2 + 1, dtype=np.float64)
+    sin_eval_points = np.arange(1, mat_size // 2 + 1,
+                                dtype=np.float64)  # these are the i input points in formula, evenly space over our
+    # fixed domain
+
+    for i in range(0, mat_size):
+        # The next basis fcn is the previous times a new linear polynomial
+        mat[:, ::2] = np.cos(cos_eval_points * eval_pts[:, np.newaxis])
+        mat[:, 1::2] = np.sin(sin_eval_points * eval_pts[:, np.newaxis])
     return mat
 
 
@@ -192,10 +208,10 @@ def evaluate_lagrange_basis(input_range, function):
 def f(x): return np.sin(x)
 
 
-def h(x): return np.heaviside(x-1.5, 0.5)
+def h(x): return np.heaviside(x - 1.5, 0.5)
 
 
-def g(x): return 1.0 / (1.0 + 25.0 * (x - 1.5)**2.0)
+def g(x): return 1.0 / (1.0 + 25.0 * (x - 1.5) ** 2.0)
 
 
 def q(x):  # heavily oscillatory function
